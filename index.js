@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
+const { verifyToken } = require("./middlewares/auth.middleware");
+
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth.routes");
 
@@ -14,11 +16,20 @@ app.use("/api/auth", authRoutes);
 // connect database
 connectDB();
 
+// test route
 app.get("/", (req, res) => {
   res.send("BookWorm Server is running...");
 });
+
 app.get("/api/health", (req, res) => {
   res.json({ success: true, message: "API Health Server is running" });
+});
+
+app.get("/api/protected", verifyToken, (req, res) => {
+  res.json({
+    message: "Protected data accessed ✅",
+    user: req.user,
+  });
 });
 
 const PORT = process.env.PORT || 5000;
