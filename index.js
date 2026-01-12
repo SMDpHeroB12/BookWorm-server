@@ -14,8 +14,11 @@ app.use("/api/auth", authRoutes);
 // connect database
 connectDB();
 
+app.get("/", (req, res) => {
+  res.send("BookWorm Server is running...");
+});
 app.get("/api/health", (req, res) => {
-  res.json({ success: true, message: "Server is running" });
+  res.json({ success: true, message: "API Health Server is running" });
 });
 
 const PORT = process.env.PORT || 5000;
