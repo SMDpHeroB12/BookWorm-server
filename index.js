@@ -6,12 +6,17 @@ const { verifyToken } = require("./middlewares/auth.middleware");
 
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth.routes");
+const adminRoutes = require("./routes/admin.routes");
 
 const app = express();
 
+// middlewares
 app.use(cors());
 app.use(express.json());
+
+// routes
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 // connect database
 connectDB();
