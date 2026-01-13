@@ -10,6 +10,7 @@ const adminRoutes = require("./routes/admin.routes");
 const userRoutes = require("./routes/user.routes");
 const bookRoutes = require("./routes/book.routes");
 const genreRoutes = require("./routes/genre.routes");
+const reviewRoutes = require("./routes/review.routes");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/genres", genreRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 // connect database
 connectDB();
