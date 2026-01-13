@@ -11,6 +11,7 @@ const userRoutes = require("./routes/user.routes");
 const bookRoutes = require("./routes/book.routes");
 const genreRoutes = require("./routes/genre.routes");
 const reviewRoutes = require("./routes/review.routes");
+const tutorialRoutes = require("./routes/tutorial.routes");
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/genres", genreRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/tutorials", tutorialRoutes);
 
 // connect database
 connectDB();
