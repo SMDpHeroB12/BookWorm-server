@@ -50,4 +50,27 @@ router.delete("/:id", verifyToken, verifyAdmin, async (req, res) => {
   }
 });
 
+/* ADMIN — update book */
+router.put("/:id", verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const { title, author, genre, description, coverImage } = req.body || {};
+
+    if (!title || !author || !genre || !description || !coverImage) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const updated = await Book.findByIdAndUpdate(
+      req.params.id,
+      { title, author, genre, description, coverImage },
+      { new: true, runValidators: true }
+    );
+
+    if (!updated) return res.status(404).json({ message: "Book not found" });
+
+    res.json(updated);
+  } catch (error) {
+    res.status(400).json({ message: "Failed to update book" });
+  }
+});
+
 module.exports = router;
