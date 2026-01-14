@@ -17,14 +17,14 @@ router.get("/", async (req, res) => {
 /* ADMIN — create tutorial */
 router.post("/", verifyToken, verifyAdmin, async (req, res) => {
   try {
-    const { title, youtubeUrl } = req.body || {};
+    const { title, youtubeUrl, description } = req.body || {};
     if (!title || !youtubeUrl) {
       return res
         .status(400)
         .json({ message: "Title and youtubeUrl are required" });
     }
 
-    const tutorial = await Tutorial.create({ title, youtubeUrl });
+    const tutorial = await Tutorial.create({ title, youtubeUrl, description });
     res.status(201).json(tutorial);
   } catch {
     res.status(400).json({ message: "Failed to create tutorial" });
@@ -34,7 +34,7 @@ router.post("/", verifyToken, verifyAdmin, async (req, res) => {
 /* ADMIN — update tutorial */
 router.put("/:id", verifyToken, verifyAdmin, async (req, res) => {
   try {
-    const { title, youtubeUrl } = req.body || {};
+    const { title, youtubeUrl, description } = req.body || {};
     if (!title || !youtubeUrl) {
       return res
         .status(400)
@@ -43,7 +43,7 @@ router.put("/:id", verifyToken, verifyAdmin, async (req, res) => {
 
     const updated = await Tutorial.findByIdAndUpdate(
       req.params.id,
-      { title, youtubeUrl },
+      { title, youtubeUrl, description },
       { new: true, runValidators: true }
     );
 
