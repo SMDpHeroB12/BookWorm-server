@@ -9,51 +9,55 @@ const router = express.Router();
 // REGISTER
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, photo, password } = req.body || {};
+    const { name, email, password, photo } = req.body || {};
 
-    if (!req.body) {
-      return res.status(400).json({
-        message: "Request body is missing",
-      });
+    // Validation
+    if (!name || !email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Name, email, and password are required" });
     }
 
-    if (!name || !email || !photo || !password) {
-      return res.status(400).json({
-        message: "All fields are required",
-      });
+    const normalizedEmail = String(email).trim().toLowerCase();
+
+    // Basic password strength
+    if (String(password).length < 6) {
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
     }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({
-        message: "Email already registered",
-      });
+    // Duplicate email
+    const existing = await User.findOne({ email: normalizedEmail });
+    if (existing) {
+      return res.status(409).json({ message: "Email already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash password (bcrypt)
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await User.create({
-      name,
-      email,
-      photo,
+      name: String(name).trim(),
+      email: normalizedEmail,
       password: hashedPassword,
+      photo: photo ? String(photo).trim() : "",
+      role: "user",
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "User registered successfully ✅",
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
+        photo: user.photo,
       },
     });
-  } catch (error) {
-    console.error("REGISTER ERROR ", error);
-
-    res.status(500).json({
-      message: error.message,
-    });
+  } catch (err) {
+    console.log("REGISTER ERROR", err);
+    return res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -99,6 +103,7 @@ router.post("/login", async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        photo: user.photo,
       },
     });
   } catch (error) {
