@@ -11,21 +11,27 @@ router.post("/register", async (req, res) => {
   try {
     const { name, email, password, photo } = req.body || {};
 
-    // Validation
+    // Basic validation
     if (!name || !email || !password) {
       return res
         .status(400)
         .json({ message: "Name, email, and password are required" });
     }
 
-    const normalizedEmail = String(email).trim().toLowerCase();
+    //  Strong password validation (single source of truth)
+    const errors = [];
+    if (password.length < 6) errors.push("minimum 6 characters");
+    if (!/[A-Z]/.test(password)) errors.push("1 uppercase letter");
+    if (!/[a-z]/.test(password)) errors.push("1 lowercase letter");
+    if (!/[0-9]/.test(password)) errors.push("1 number");
 
-    // Basic password strength
-    if (String(password).length < 6) {
-      return res
-        .status(400)
-        .json({ message: "Password must be at least 6 characters" });
+    if (errors.length) {
+      return res.status(400).json({
+        message: `Weak password: ${errors.join(", ")}`,
+      });
     }
+
+    const normalizedEmail = String(email).trim().toLowerCase();
 
     // Duplicate email
     const existing = await User.findOne({ email: normalizedEmail });
