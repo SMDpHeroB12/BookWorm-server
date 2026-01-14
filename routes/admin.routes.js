@@ -1,5 +1,7 @@
 const express = require("express");
 const User = require("../models/User");
+const Book = require("../models/Book");
+const Review = require("../models/Review");
 
 const { verifyToken, verifyAdmin } = require("../middlewares/auth.middleware");
 
@@ -11,6 +13,21 @@ router.get("/dashboard", verifyToken, verifyAdmin, (req, res) => {
     message: "Welcome Admin Dashboard",
     admin: req.user,
   });
+});
+
+// GET /api/admin/stats
+router.get("/stats", verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const [totalUsers, totalBooks, pendingReviews] = await Promise.all([
+      User.countDocuments(),
+      Book.countDocuments(),
+      Review.countDocuments({ status: "pending" }),
+    ]);
+
+    res.json({ totalUsers, totalBooks, pendingReviews });
+  } catch (e) {
+    res.status(500).json({ message: "Failed to load stats" });
+  }
 });
 
 /* ADMIN — list all users */
